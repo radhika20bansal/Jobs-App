@@ -44,13 +44,21 @@ const updateJob = async (req, res) => {
     { new: true, runValidators: true }
   );
 
-  if(!job){
+  if (!job) {
     throw new NotFoundError(`No job found with id ${jobId}`);
   }
   res.status(200).json({ job });
 };
 const deleteJob = async (req, res) => {
-  res.status(StatusCodes.OK).json({ msg: "deleteJob endpoint" });
+  const {
+    user: { userId },
+    params: { id: jobId },
+  } = req;
+  const job = await Jobs.findByIdAndRemove({ _id: jobId, createdBy: userId });
+  if (!job) {
+    throw new NotFoundError(`No job with id ${jobId}`);
+  }
+  res.status(StatusCodes.OK).json({ success: true });
 };
 
 module.exports = {
